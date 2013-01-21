@@ -135,7 +135,7 @@ public class Clien {
 				registros++;
 				a.progressBar2.setValue(registros);
 			}
-			System.out.println("Funcionou FORNE");
+			System.out.println("Funcionou CLIEN");
 			pVmd.close();
 			pPg.close();
 			

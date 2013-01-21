@@ -26,6 +26,7 @@ import javax.swing.SwingWorker;
 import net.miginfocom.swing.MigLayout;
 import conexao.Conexao;
 import entidades.Clien;
+import entidades.Ender;
 import entidades.Fabri;
 import entidades.Forne;
 import entidades.Grcli;
@@ -130,6 +131,7 @@ public class App extends JFrame {
 					Fabri fabri = new Fabri();
 					Grcli grcli = new Grcli();
 					Clien clien = new Clien();
+					Ender ender = new Ender();
 						
 					if (cboxTBNCM.isSelected() && cboxTBSEC.isSelected()
 						 && cboxFABRI.isSelected() && cboxPRODU.isSelected() 
@@ -168,31 +170,16 @@ public class App extends JFrame {
 						}
 						
 						// CLIEN					
-						try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
-							stmt.executeUpdate("DELETE FROM CLIEN");
-							stmt.close();
-							System.out.println("Deletou CLIEN");
-							progressBar.setValue(6);
-						}
+						clien.deleta();
 						
 						// GRCLI
 						grcli.deleta();
 						
 						// CLXED
-						try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
-							stmt.executeUpdate("DELETE FROM CLXED");
-							stmt.close();
-							System.out.println("Deletou CLXED");
-							progressBar.setValue(7);
-						}
+						ender.deleta_clxed();
 						
 						// ENDER
-						try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
-							stmt.executeUpdate("DELETE FROM ENDER");
-							stmt.close();
-							System.out.println("Deletou ENDER");
-							progressBar.setValue(8);
-						}
+						ender.deleta_ender();
 					}
 
 					// IMPORTAÇÃO
@@ -447,109 +434,13 @@ public class App extends JFrame {
 					//ENDER
 					if (cboxENDER.isSelected()) {
 						System.out.println("COMEÇOU ENDER");
-						try (Statement stmt = vmd.createStatement()) {
-							stmt.executeUpdate("DELETE FROM CLXED");
-							stmt.close();
-							System.out.println("Deletou");
-							progressBar.setValue(26);
-						}
+						ender.deleta_clxed();
 						
-						try (Statement stmt = vmd.createStatement()) {
-							stmt.executeUpdate("DELETE FROM ENDER");
-							stmt.close();
-							System.out.println("Deletou");
-							progressBar.setValue(27);
-						}
+						ender.deleta_ender();
 
 						progressBar2.setValue(0);
 
-						String msCLIEN_ENDER = "select a.cdc_cliente, a.cdc_cpf, a.cdc_empresa, a.cdc_telefone, a.cdc_razao, a.cdc_endereco, a.cdc_cep, a.cdc_dt_cadastro, " +
-								                "a.cdc_proximo, a.cdc_complemento, b.cid_nome as cidade, b.cid_uf as uf, c.bai_nome as bairro " +
-								                "from carcdc a left join cadbai c on c.bai_codigo = a.cdc_bairro and c.bai_cidade = a.cdc_cidade " +
-								                "left join carcid b on b.cid_cidade = a.cdc_cidade";
-						String vENDER = "Insert Into ENDER (Cod_EndFon, Nom_Contat, Des_Endere, Des_Bairro, Num_CEP, Des_Estado, Des_Cidade, Dat_Cadast) Values (?,?,?,?,?,?,?,?)";
-						String vCLXED = "Insert Into CLXED (Cod_Client, Cod_EndFon) Values (?,?)";
-						//String vCLIEN = "Update CLIEN set Cod_EndRes = ? where Cod_Client = ?";
-						try (PreparedStatement pVmd = vmd.prepareStatement(vENDER);
-							 PreparedStatement pMS = pg.prepareStatement(msCLIEN_ENDER);
-							PreparedStatement pVmdCLXED = vmd.prepareStatement(vCLXED);
-							// PreparedStatement pVmdCLIEN = vmd.prepareStatement(vCLIEN)
-									 ) {
-							
-							ResultSet rs = pMS.executeQuery();
-
-							// contar a qtde de registros
-							int registros = contaRegistros("CARCDC");
-							progressBar2.setMaximum(registros);
-							registros = 0;
-
-							while (rs.next()) {
-								// grava no varejo
-								//esta indo codigo repetido
-							  int codigo = getCod_Clien(rs.getInt("CDC_CLIENTE"), rs.getInt("CDC_EMPRESA"));
-								
-								String tel = rs.getString("CDC_TELEFONE");
-							   if(tel != null){
-								   tel = tel.replaceAll("\\D", "");
-								   if(tel.length() > 15){
-									   tel = tel.substring(0,15);
-								   }
-								   
-								   if(!existeCod_EndFon(tel)){
-									   pVmd.setString(1, tel);
-								  
-							   
-							   String razao = rs.getString("CDC_RAZAO");
-							   if(razao != null){
-								 pVmd.setString(2, razao.length() > 35 ? razao.substring(0, 35) : razao); 
-							   }
-							   
-							   pVmd.setString(3, rs.getString("CDC_ENDERECO"));
-							    
-							    String bairro = rs.getString("BAIRRO");
-							    if(bairro != null){
-							    	pVmd.setString(4, bairro.length() > 25 ? bairro.substring(0, 25) : bairro);
-							    }
-							   
-							   
-							    String cep = rs.getString("CDC_CEP") ;
-								   if(cep != null){
-									   cep = cep.replaceAll("\\D", "");
-									   pVmd.setString(5, cep.length() > 8 ? cep.substring(0,8) : cep);
-								   }
-							    
-							    pVmd.setString(6, rs.getString("UF"));
-							    
-							    String cidade = rs.getString("CIDADE");
-							    if(cidade != null){
-							    	pVmd.setString(7, cidade.length() > 25 ? cidade.substring(0,15) : cidade);
-							    }
-							    
-							    pVmd.setDate(8, rs.getDate("CDC_DT_CADASTRO"));
-								pVmd.executeUpdate();
-								
-								//CLXED
-								pVmdCLXED.setInt(1, codigo);
-								pVmdCLXED.setString(2, tel);
-								pVmdCLXED.executeUpdate();
-								
-								//CLIEN
-								//pVmdCLIEN.setString(1, wfone);
-								//pVmdCLIEN.setString(2, rs.getString("CODCLI"));
-								//pVmdCLIEN.executeUpdate();
-
-
-								registros++;
-								progressBar2.setValue(registros);
-								 }
-								 }
-							}
-							System.out.println("Funcionou ENDER");
-							pVmd.close();
-							pMS.close();
-
-							progressBar2.setValue(0);
-						}
+						ender.importa();
 						progressBar.setValue(28);
 						
 					}
@@ -827,7 +718,7 @@ public class App extends JFrame {
 		}
 	}
 	
-	private int getCod_Clien(int clien, int empre) throws SQLException {
+	public int getCod_Clien(int clien, int empre) throws SQLException {
 		
 			String sql = "SELECT Cod_Client FROM Clien WHERE clien_aux = "+clien+"and empre_aux ="+empre;
 			try (PreparedStatement ps = Conexao.getSqlConnectionAux().prepareStatement(sql);
@@ -850,7 +741,7 @@ public class App extends JFrame {
 		}
 	}
 
-	private boolean existeCod_EndFon(String Cod_EndFon) throws SQLException {
+	public boolean existeCod_EndFon(String Cod_EndFon) throws SQLException {
 		String sql = "SELECT CAST(CASE WHEN EXISTS(SELECT * FROM ENDER where Cod_EndFon = '"+Cod_EndFon+"') THEN 1 ELSE 0 END AS BIT)";
 		try (PreparedStatement ps = Conexao.getSqlConnectionAux().prepareStatement(sql);
 			ResultSet rs = ps.executeQuery()) {
@@ -861,47 +752,6 @@ public class App extends JFrame {
 		}
 	}
 	
-//	private void gravaPrxlj() throws SQLException {
-//		String mProdu = "select CAD_CODIGO, CAD_CUSTO_MEDIO, CAD_ULT_PCOMPRA, CAD_PCUSTO from estcad1";
-//		String vPrxlj = "Update PRXLJ set Prc_CusLiqMed = ?, Prc_CusEnt = ?, Prc_CusLiq = ?, Prc_VenAtu = ? where Cod_Produt = ?";
-//		try (PreparedStatement ps = Conexao.getSqlConnectionAux().prepareStatement(vPrxlj);
-//			 PreparedStatement ms = Conexao.getMysqlConnectionAux().prepareStatement(mProdu)) {
-//			
-//			ResultSet rs = ms.executeQuery();
-//
-//			while (rs.next()) {
-//				// grava no varejo
-//				System.out.println(rs.getInt("CAD_CODIGO"));
-//				ps.setInt(1, rs.getInt("CAD_CUSTO_MEDIO"));
-//			    ps.setString(2, rs.getString("CAD_ULT_PCOMPRA"));
-//			    ps.setString(3, rs.getString("CAD_ULT_PCOMPRA"));
-//			    ps.setString(4, rs.getString("CAD_PCUSTO"));
-//			    ps.setInt(5, rs.getInt("CAD_CODIGO"));
-//				
-//				ps.executeUpdate();
-//
-//			}
-//			System.out.println("CADASTROU PRXLJ");
-//			ms.close();
-//			ps.close();
-//	}
-//	}
-	
-
-	// private int contaRegistros2(String tabela, String where, Connection c)
-	// throws SQLException {
-	// String sql = "SELECT count(*) qtde FROM "+tabela+" "+where;
-	// try (PreparedStatement ps = c.prepareStatement(sql)) {
-	// ResultSet rs = ps.executeQuery();
-	// if (rs.next()) {
-	// return rs.getInt(1);
-	// }
-	// return 0;
-	// }
-	// }
-	// public JCheckBox getCboxFORNE() {
-	// return cboxFORNE;
-	// }
 	public JCheckBox getCboxPRXLJ() {
 		return cboxCLIEN;
 	}
