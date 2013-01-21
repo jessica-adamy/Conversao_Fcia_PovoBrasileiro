@@ -25,6 +25,10 @@ import javax.swing.SwingWorker;
 
 import net.miginfocom.swing.MigLayout;
 import conexao.Conexao;
+import entidades.Clien;
+import entidades.Fabri;
+import entidades.Forne;
+import entidades.Grcli;
 
 public class App extends JFrame {
 
@@ -32,19 +36,21 @@ public class App extends JFrame {
 
 	private JCheckBox cboxPRODU;
 	private JCheckBox cboxFABRI;
-	private JTextField txtFBBanco;
+	private JTextField txtPGBanco;
 	private JTextField txtVmdServidor;
 	private JTextField txtVmdBanco;
 	private JButton btn_limpa_dados;
 	private JProgressBar progressBar;
 	private JButton btn_processa;
-	private JProgressBar progressBar2;
+	public JProgressBar progressBar2;
 	private JCheckBox cboxFORNE;
 	private JCheckBox cboxCLIEN;
 	private JCheckBox cboxENDER;
 	private JCheckBox cboxTBNCM;
 	private JCheckBox cboxTBSEC;
 	private JCheckBox cboxPRXLJ;
+	private JCheckBox cboxGRCLI;
+	
 
 	/**
 	 * Launch the application.
@@ -78,10 +84,10 @@ public class App extends JFrame {
 		JLabel lblNewLabel = new JLabel("BD Antigo");
 		panelTop.add(lblNewLabel, "cell 0 0,alignx trailing");
 		
-		txtFBBanco= new JTextField();
-		txtFBBanco.setText("softpharma");
-		panelTop.add(txtFBBanco, "cell 1 0,growx");
-		txtFBBanco.setColumns(10);
+		txtPGBanco= new JTextField();
+		txtPGBanco.setText("povo_brasileiro");
+		panelTop.add(txtPGBanco, "cell 1 0,growx");
+		txtPGBanco.setColumns(10);
 
 		JLabel lblNewLabel_1 = new JLabel("VMD Servidor");
 		panelTop.add(lblNewLabel_1, "cell 0 1,alignx trailing");
@@ -117,13 +123,18 @@ public class App extends JFrame {
 				int resp = JOptionPane.showConfirmDialog(panel, "Confirma?", "Processar Dados", JOptionPane.YES_NO_OPTION);
 																		
 				if (resp == 0) {
-					Connection ms = Conexao.getMysqlConnection();
+					Connection pg = Conexao.getPostgresConnection();
 					Connection vmd = Conexao.getSqlConnection();
+					
+					Forne forne = new Forne();
+					Fabri fabri = new Fabri();
+					Grcli grcli = new Grcli();
+					Clien clien = new Clien();
 						
 					if (cboxTBNCM.isSelected() && cboxTBSEC.isSelected()
 						 && cboxFABRI.isSelected() && cboxPRODU.isSelected() 
 						 && cboxCLIEN.isSelected() && cboxFORNE.isSelected() 
-						 && cboxENDER.isSelected()) {
+						 && cboxENDER.isSelected() && cboxGRCLI.isSelected()) {
 
 						// APAGANDO DADOS
 						// PRODUTO
@@ -135,20 +146,10 @@ public class App extends JFrame {
 						}
 
 						// FABRI
-						try (Statement stmt = vmd.createStatement()) {
-							stmt.executeUpdate("DELETE FROM FABRI");
-							stmt.close();
-							System.out.println("Deletou FABRI");
-							progressBar.setValue(2);
-						}
+						fabri.deleta();
 
 						// FORNE					
-						try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
-							stmt.executeUpdate("DELETE FROM FORNE");
-							stmt.close();
-							System.out.println("Deletou FORNE");
-							progressBar.setValue(3);
-						}
+						forne.deleta();
 						
 						// TBNCM
 						try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
@@ -173,6 +174,9 @@ public class App extends JFrame {
 							System.out.println("Deletou CLIEN");
 							progressBar.setValue(6);
 						}
+						
+						// GRCLI
+						grcli.deleta();
 						
 						// CLXED
 						try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
@@ -207,7 +211,7 @@ public class App extends JFrame {
 						String msGRPRC = "SELECT * FROM ESTNCM";
 						String vGRPRC = "Insert Into TBNCM (Cod_Ncm, Des_Ncm) Values (?,?)";
 						try (PreparedStatement pVmd = vmd.prepareStatement(vGRPRC);
-							 PreparedStatement pMs = ms.prepareStatement(msGRPRC)) {
+							 PreparedStatement pMs = pg.prepareStatement(msGRPRC)) {
 							ResultSet rs = pMs.executeQuery();
 							
 							// contar a qtde de registros
@@ -261,7 +265,7 @@ public class App extends JFrame {
 						String msTBSEC = "SELECT * FROM ESTSEC";
 						String vTBSEC = "Insert Into TBSEC (Cod_Seccao, Des_Seccao, Cod_Aux) Values (?,?,?)";
 						try (PreparedStatement pVmd = vmd.prepareStatement(vTBSEC);
-							 PreparedStatement pMs = ms.prepareStatement(msTBSEC)) {
+							 PreparedStatement pMs = pg.prepareStatement(msTBSEC)) {
 							
 							ResultSet rs = pMs.executeQuery();
 
@@ -293,45 +297,11 @@ public class App extends JFrame {
 					//FABRI
 					if (cboxFABRI.isSelected()) {
 						System.out.println("COMEÇOU FABRI");
-						try (Statement stmt = vmd.createStatement()) {
-							stmt.executeUpdate("DELETE FROM FABRI");
-							stmt.close();
-							System.out.println("Deletou FABRI");
-							progressBar.setValue(14);
-						}
-
-						progressBar2.setValue(0);
-
-						String msFabri = "SELECT * FROM ESTLAB";
-						String vFabri = "Insert Into FABRI (Cod_Fabric, Des_Fabric, Num_Cnpj) Values (?,?,?)";
-						try (PreparedStatement pVmd = vmd.prepareStatement(vFabri);
-							 PreparedStatement pFb = ms.prepareStatement(msFabri)) {
-							
-							ResultSet rs = pFb.executeQuery();
-
-							// contar a qtde de registros
-							int registros = contaRegistros("ESTLAB");
-							progressBar2.setMaximum(registros);
-							registros = 0;
-
-							while (rs.next()) {
-							 // grava no varejo
-								pVmd.setInt(1, rs.getInt("lab_laboratorio"));
-							    pVmd.setString(2, rs.getString("lab_razao").length() > 25 ? rs.getString("lab_razao").substring(0, 24) : rs.getString("lab_razao"));
-								pVmd.setString(3, rs.getString("lab_cnpj").length() > 14 ? rs.getString("lab_cnpj").substring(0, 14) : rs.getString("lab_cnpj"));
-								
-								pVmd.executeUpdate();
-
-								registros++;
-								progressBar2.setValue(registros);
-							}
-							
-							System.out.println("Funcionou Fabri");
-							pVmd.close();
-							pFb.close();
-
-							progressBar2.setValue(0);
-						}
+						
+						fabri.deleta();
+						progressBar.setValue(14);
+						
+						fabri.importa();
 						progressBar.setValue(15);
 					}
 						
@@ -349,7 +319,7 @@ public class App extends JFrame {
 						String MsPRODU = "select * from estcad";
 						String vPRODU = "Insert Into PRODU (Cod_Produt, Des_Produt, Des_Resumi, Des_Comple, Dat_Implan, Cod_Fabric, Cod_EAN, Cod_Ncm, Qtd_FraVen, Qtd_EmbVen, Ctr_Origem, Cod_Classi, Cod_Seccao, Cod_ClaTri, Ctr_Preco, Ctr_Lista, Ctr_Venda, Cod_GrpPrc) Values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 						try (PreparedStatement pVmd = vmd.prepareStatement(vPRODU);
-							 PreparedStatement pMs = ms.prepareStatement(MsPRODU);) {
+							 PreparedStatement pMs = pg.prepareStatement(MsPRODU);) {
 							
 							ResultSet rs = pMs.executeQuery();
 
@@ -414,7 +384,7 @@ public class App extends JFrame {
 						String mProdu = "select CAD_CODIGO, CAD_CUSTO_MEDIO, CAD_ULT_PCOMPRA, CAD_PCUSTO from estcad1";
 						String vPrxlj = "Update PRXLJ set Prc_CusLiqMed = ?, Prc_CusEnt = ?, Prc_CusLiq = ?, Prc_VenAtu = ? where Cod_Produt = ?";
 						try (PreparedStatement  pVmd = vmd.prepareStatement(vPrxlj);
-							 PreparedStatement pMs = ms.prepareStatement(mProdu)) {
+							 PreparedStatement pMs = pg.prepareStatement(mProdu)) {
 							
 							ResultSet rs = pMs.executeQuery();
 							
@@ -439,7 +409,7 @@ public class App extends JFrame {
 
 							}
 							System.out.println("CADASTROU PRXLJ");
-							ms.close();
+							pg.close();
 							rs.close();
 							
 							progressBar2.setValue(0);
@@ -451,206 +421,26 @@ public class App extends JFrame {
 					//FORNE					
 					if (cboxFORNE.isSelected()) {
 						System.out.println("COMEÇOU FORNE");
-						try (Statement stmt = vmd.createStatement()) {
-							stmt.executeUpdate("DELETE FROM FORNE");
-							stmt.close();
-							System.out.println("Deletou FORNE");
-							progressBar.setValue(20);
-						}
-
+						forne.deleta();
 						progressBar2.setValue(0);
+						forne.importa();
 
-						String msFORNE = "select a.*, b.cid_cod_ibge as cod_ibge, b.cid_nome as cidade, b.cid_uf as uf from cpacdf a join carcid b on b.cid_cidade = a.cdf_cidade";
-						String vFORNE = "Insert Into FORNE (Cod_Fornec, Num_CgcCpf, Num_CgfRg, Des_RazSoc, Des_Fantas, Cod_IBGE, Des_Endere, Des_Bairro, Num_Cep, Flg_Bloque, Num_Fone, Num_Fax, Des_Estado, Des_Cidade, Cod_RegTri, Nom_Contat, Des_Observ) Values (?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?,?)";
-						try (PreparedStatement pVmd = vmd.prepareStatement(vFORNE);
-							 PreparedStatement pMs = ms.prepareStatement(msFORNE)) {
-							
-							ResultSet rs = pMs.executeQuery();
-
-							// contar a qtde de registros
-							int registros = contaRegistros("CPACDF");
-							progressBar2.setMaximum(registros);
-							registros = 0;
-							
-
-							while (rs.next()) {
-								String tel = rs.getString("CDF_FONE");
-								if(tel != null) {
-									tel = tel.replaceAll("\\D", "");
-								}
-										
-								// grava no varejo
-								pVmd.setInt(1, rs.getInt("CDF_COD_FORN"));
-							    pVmd.setString(2, rs.getString("CDF_CNPJ").replace(".", "").replace("/", "").replace("-", ""));
-							    pVmd.setString(3, rs.getString("CDF_INSCRICAO").replace(".", "").replace("/", "").replace("-", ""));
-							    pVmd.setString(4, rs.getString("CDF_RAZAO").length() > 35 ? rs.getString("CDF_RAZAO").substring(0, 34) : rs.getString("CDF_RAZAO"));
-							    pVmd.setString(5, rs.getString("CDF_RAZAO").length() > 25 ? rs.getString("CDF_RAZAO").substring(0, 24) : rs.getString("CDF_RAZAO"));
-							    pVmd.setInt(6, rs.getInt("COD_IBGE"));
-							    pVmd.setString(7, rs.getString("CDF_ENDERECO").length() > 25 ? rs.getString("CDF_ENDERECO").substring(0, 24) : rs.getString("CDF_ENDERECO"));
-							    pVmd.setString(8, rs.getString("CDF_BAIRRO").length() > 25 ? rs.getString("CDF_BAIRRO").substring(0, 24) : rs.getString("CDF_BAIRRO"));
-							    pVmd.setString(9, rs.getString("CDF_CEP").replace(".", "").replace("/", "").replace("-", ""));
-							    
-							    pVmd.setString(10, tel.length() > 11 ? tel.substring(0, 11) : tel);
-							    pVmd.setString(11, rs.getString("CDF_FAX").replace(".", "").replace("(", "").replace(")", "").replace("-", "").replaceAll(" ", ""));
-							    pVmd.setString(12, rs.getString("UF"));
-							    pVmd.setString(13, rs.getString("CIDADE").length() > 25 ? rs.getString("CIDADE").substring(0, 24) : rs.getString("CIDADE"));
-							    
-							    if(rs.getString("UF").equals("CE")){
-							    	pVmd.setInt(14, 4);
-							    }
-							    
-							    if(rs.getString("UF").equals("AC") || rs.getString("UF").equals("AL") || rs.getString("UF").equals("AP") ||
-								   rs.getString("UF").equals("AM") || rs.getString("UF").equals("BA") || rs.getString("UF").equals("DF") ||
-								   rs.getString("UF").equals("GO") || rs.getString("UF").equals("MA") || rs.getString("UF").equals("MT") ||
-								   rs.getString("UF").equals("MS") || rs.getString("UF").equals("PB") || rs.getString("UF").equals("PA") ||
-								   rs.getString("UF").equals("PE") || rs.getString("UF").equals("PI") || rs.getString("UF").equals("RN") ||
-								   rs.getString("UF").equals("RO") || rs.getString("UF").equals("RR") || rs.getString("UF").equals("SE") || rs.getString("UF").equals("TO")){
-							    	pVmd.setInt(14, 1);
-							    }
-							    
-							    if(rs.getString("UF").equals("ES") || rs.getString("UF").equals("MG") ||
-							       rs.getString("UF").equals("PR") || rs.getString("UF").equals("RJ") || 
-								   rs.getString("UF").equals("RS") || rs.getString("UF").equals("SC") || 
-								   rs.getString("UF").equals("SP")){
-							       
-							    	pVmd.setInt(14, 9);
-							    }
-							    
-							    pVmd.setString(15, rs.getString("CDF_CONTATO").length() > 25 ? rs.getString("CDF_CONTATO").substring(0, 24) : rs.getString("CDF_CONTATO"));
-							    pVmd.setString(16, rs.getString("CDF_OBS").length() > 16 ? rs.getString("CDF_OBS").substring(0, 15) : rs.getString("CDF_OBS"));
-							    
-								// todo demais campo
-								pVmd.executeUpdate();
-
-								registros++;
-								progressBar2.setValue(registros);
-							}
-							System.out.println("Funcionou FORNE");
-							pVmd.close();
-							pMs.close();
-
-							progressBar2.setValue(0);
-						}
-						progressBar.setValue(21);
+					}
+					
+					// GRCLI
+					if (cboxGRCLI.isSelected()) {
+						System.out.println("COMEÇOU GRCLI");
+						grcli.deleta();
+						progressBar2.setValue(0);
+						grcli.importa();
 					}
 					
 					//CLIEN
 					if (cboxCLIEN.isSelected()) {
 						System.out.println("COMEÇOU CLIEN");
-						  try (Statement stmt = vmd.createStatement()) {
-								stmt.executeUpdate("IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS C WHERE TABLE_NAME = 'clien' AND TABLE_SCHEMA = 'dbo' AND COLUMN_NAME = 'clien_aux' AND DATA_TYPE = 'INT') BEGIN ALTER TABLE clien ADD clien_aux INT END ");
-								stmt.close();
-								System.out.println("CRIOU COLUNA clien_AUX");
-								progressBar.setValue(22);
-							}
-							
-							try (Statement stmt = vmd.createStatement()) {
-									stmt.executeUpdate("IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS C WHERE TABLE_NAME = 'clien' AND TABLE_SCHEMA = 'dbo' AND COLUMN_NAME = 'empre_aux' AND DATA_TYPE = 'INT') BEGIN ALTER TABLE clien ADD empre_aux INT END ");
-									stmt.close();
-									System.out.println("CRIOU COLUNA empre_AUX");
-									progressBar.setValue(23);
-								}
-
-							try (Statement stmt = vmd.createStatement()) {
-								stmt.executeUpdate("DELETE FROM CLIEN");
-								stmt.close();
-								System.out.println("Deletou");
-								progressBar.setValue(24);
-							}
-
-							progressBar2.setValue(0);
-
-						String msCLIEN = "select a.*,b.cid_nome as cidade, b.cid_uf as uf, c.bai_nome as bairro from carcdc a left join cadbai c on c.bai_codigo = a.cdc_bairro and c.bai_cidade = a.cdc_cidade left join carcid b on b.cid_cidade = a.cdc_cidade";
-						String vCLIEN = "Insert Into CLIEN (Cod_Client, Nom_Client, Dat_Cadast, Num_CpfCgc, Num_RgCgf, Num_FonCel, Des_Email, Des_Observ, Cod_RegTri, clien_aux, empre_aux, Sex_Client, Cod_GrpCli, Ctr_Vencim, Dat_UltCpr, Cod_EndRes) Values (?,?,?,?,?,?,?,?,?,?,?,null,1,'N',?,?)";
-						try (PreparedStatement pVmd = vmd.prepareStatement(vCLIEN);
-							 PreparedStatement pMs = ms.prepareStatement(msCLIEN)) {
-							
-							ResultSet rs = pMs.executeQuery();
-
-							// contar a qtde de registros
-							int registros = contaRegistros("CARCDC");
-							progressBar2.setMaximum(registros);
-							registros = 0;
-
-							while (rs.next()) {
-								
-								// grava no varejo
-								int codigo = prox("Cod_Client", "CLIEN");
-								pVmd.setInt(1, codigo);
-							    pVmd.setString(2, rs.getString("CDC_RAZAO").length() > 35 ? rs.getString("CDC_RAZAO").substring(0, 34) : rs.getString("CDC_RAZAO"));
-							    pVmd.setDate(3, rs.getDate("CDC_DT_CADASTRO"));
-							    
-							    String cpf = rs.getString("CDC_CPF") ;
-							    if(cpf != null){
-							    	 cpf = cpf.replaceAll("\\D", "");
-							    pVmd.setString(4, cpf.length() > 14 ? cpf.substring(0,14) : cpf );
-							    }
-							    
-							    String rg = rs.getString("CDC_RG") ;
-							    if(rg != null){
-							    	rg = rg.replaceAll("\\D", "");
-							    pVmd.setString(5, rg.length() > 15 ? rg.substring(0,15) : rg );
-							    }
-							    
-							    String cel = rs.getString("CDC_CELULAR") ;
-							    if(cel != null){
-							    	cel = cel.replaceAll("\\D", "");
-							    pVmd.setString(6, cel.length() > 15 ? cel.substring(0,15) : cel );
-							    }
-							    
-							    pVmd.setString(7, rs.getString("CDC_EMAIL"));
-							    
-							    String obs = rs.getString("CDC_OBSERVACAO1") ;
-							    if(obs != null){
-							    pVmd.setString(8, obs.length() > 16 ? obs.substring(0,16) : obs );
-							    }
-							    
-							    if(rs.getString("UF").equals("CE")){
-							    	pVmd.setInt(9, 4);
-							    }
-							    if(rs.getString("UF").equals("AC") || rs.getString("UF").equals("AL") || rs.getString("UF").equals("AP") ||
-								   rs.getString("UF").equals("AM") || rs.getString("UF").equals("BA") || rs.getString("UF").equals("DF") ||
-								   rs.getString("UF").equals("GO") || rs.getString("UF").equals("MA") || rs.getString("UF").equals("MT") ||
-								   rs.getString("UF").equals("MS") || rs.getString("UF").equals("PB") || rs.getString("UF").equals("PA") ||
-								   rs.getString("UF").equals("PE") || rs.getString("UF").equals("PI") || rs.getString("UF").equals("RN") ||
-								   rs.getString("UF").equals("RO") || rs.getString("UF").equals("RR") || rs.getString("UF").equals("SE") || rs.getString("UF").equals("TO")){
-							    	pVmd.setInt(9, 1);
-							    }
-							    
-							    if(rs.getString("UF").equals("ES") || rs.getString("UF").equals("MG") ||
-									       rs.getString("UF").equals("PR") || rs.getString("UF").equals("RJ") || 
-									       rs.getString("UF").equals("RS") || rs.getString("UF").equals("SC") || 
-									       rs.getString("UF").equals("SP")){
-							    	pVmd.setInt(9, 9);
-							    }
-							    
-							   pVmd.setString(10, rs.getString("CDC_CLIENTE"));
-							   pVmd.setString(11, rs.getString("CDC_EMPRESA"));
-							   pVmd.setDate(12, rs.getDate("CDC_DT_ULT_COMPRA"));
-							   
-							   String tel = rs.getString("CDC_TELEFONE") ;
-							   if(tel != null && !tel.equals("")){
-								   tel = tel.replace("\\D", "");
-								   if(tel.length() > 15){
-									   tel = tel.substring(0,15);
-								   }
-								   pVmd.setString(13, tel);
-							   }else{
-								   pVmd.setString(13, Integer.toString(codigo));
-							   }
-							   
-								pVmd.executeUpdate();
-
-								registros++;
-								progressBar2.setValue(registros);
-							}
-							System.out.println("Funcionou CLIEN");
-							pVmd.close();
-							pMs.close();
-
-							progressBar2.setValue(0);
-						}
-						progressBar.setValue(25);
+						clien.deleta();
+						progressBar2.setValue(0);
+						clien.importa();
 						
 					}
 					
@@ -681,7 +471,7 @@ public class App extends JFrame {
 						String vCLXED = "Insert Into CLXED (Cod_Client, Cod_EndFon) Values (?,?)";
 						//String vCLIEN = "Update CLIEN set Cod_EndRes = ? where Cod_Client = ?";
 						try (PreparedStatement pVmd = vmd.prepareStatement(vENDER);
-							 PreparedStatement pMS = ms.prepareStatement(msCLIEN_ENDER);
+							 PreparedStatement pMS = pg.prepareStatement(msCLIEN_ENDER);
 							PreparedStatement pVmdCLXED = vmd.prepareStatement(vCLXED);
 							// PreparedStatement pVmdCLIEN = vmd.prepareStatement(vCLIEN)
 									 ) {
@@ -836,7 +626,7 @@ public class App extends JFrame {
 		btn_processa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				Conexao.MYSQL_BANCO = txtFBBanco.getText();
+				Conexao.PostGres_BANCO = txtPGBanco.getText();
 				Conexao.SQL_BANCO = txtVmdBanco.getText();
 				Conexao.SQL_SERVIDOR = txtVmdServidor.getText();
 				//Conexao.SQL_SERVIDOR_CONSULTA = txtVmdServidorConsulta.getText();
@@ -966,7 +756,7 @@ public class App extends JFrame {
 		btn_limpa_dados.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				Conexao.MYSQL_BANCO = txtFBBanco.getText();
+				Conexao.PostGres_BANCO = txtPGBanco.getText();
 				Conexao.SQL_BANCO = txtVmdBanco.getText();
 				Conexao.SQL_SERVIDOR = txtVmdServidor.getText();
 				new LimpaDadosWorker().execute();
@@ -992,9 +782,13 @@ public class App extends JFrame {
 		cboxPRXLJ.setSelected(true);
 		panel_1.add(cboxPRXLJ, "cell 2 0");
 		
-		cboxCLIEN = new JCheckBox("7-CLIEN");
-		cboxCLIEN.setSelected(true);
-		panel_1.add(cboxCLIEN, "cell 3 0");
+		cboxGRCLI = new JCheckBox("7-GRCLI");
+		cboxGRCLI.setSelected(true);
+		panel_1.add(cboxGRCLI, "cell 3 0");
+		
+		cboxENDER = new JCheckBox("9-ENDER");
+		cboxENDER.setSelected(true);
+		panel_1.add(cboxENDER, "cell 4 0");
 		
 		cboxTBSEC = new JCheckBox("2-TBSEC");
 		cboxTBSEC.setSelected(true);
@@ -1007,10 +801,10 @@ public class App extends JFrame {
 		cboxFORNE = new JCheckBox("6-FORNE");
 		cboxFORNE.setSelected(true);
 		panel_1.add(cboxFORNE, "cell 2 1");
-
-		cboxENDER = new JCheckBox("8-ENDER");
-		cboxENDER.setSelected(true);
-		panel_1.add(cboxENDER, "cell 3 1");
+				
+				cboxCLIEN = new JCheckBox("8-CLIEN");
+				cboxCLIEN.setSelected(true);
+				panel_1.add(cboxCLIEN, "cell 3 1");
 
 		progressBar = new JProgressBar();
 		progressBar.setMaximum(31);
@@ -1045,9 +839,9 @@ public class App extends JFrame {
 			return -1;
 	}
 
-	private int contaRegistros(String tabela) throws SQLException {
+	public int contaRegistros(String tabela) throws SQLException {
 		String sql = "SELECT count(*) qtde FROM " + tabela;
-			try (PreparedStatement ps = Conexao.getMysqlConnectionAux().prepareStatement(sql);
+			try (PreparedStatement ps = Conexao.getPostgresConnectionAux().prepareStatement(sql);
 					ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					return rs.getInt(1);
@@ -1120,6 +914,9 @@ public class App extends JFrame {
 	}
 	public JCheckBox getCboxTBSEC() {
 		return cboxTBSEC;
+	}
+	public JCheckBox getCboxGRCLI() {
+		return cboxGRCLI;
 	}
 }
 
