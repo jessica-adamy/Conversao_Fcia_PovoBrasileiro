@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javax.swing.JProgressBar;
+
 import tela.App;
 import conexao.Conexao;
 
@@ -21,7 +23,7 @@ public class Fabri {
 		}
 	}
 	
-	public void importa() throws Exception {
+	public void importa(JProgressBar progressBar2) throws Exception {
 		String pgFABRI = "select cod_laborat, nom_laborat, num_cnpj from cadlabor";
 		String vFABRI = "Insert Into FABRI (Cod_Fabric, Des_Fabric, Num_Cnpj) Values (?,?,?)";
 		try (PreparedStatement pVmd = vmd.prepareStatement(vFABRI);
@@ -31,7 +33,7 @@ public class Fabri {
 			
 			// contar a qtde de registros
 			int registros = a.contaRegistros("cadlabor");
-			a.progressBar2.setMaximum(registros);
+			progressBar2.setMaximum(registros);
 			registros = 0;
 			
 			while (rs.next()) {
@@ -56,13 +58,21 @@ public class Fabri {
 				pVmd.executeUpdate();
 
 				registros++;
-				a.progressBar2.setValue(registros);
+				progressBar2.setValue(registros);
 			}
+			
+//			Fabricante Padrão
+			pVmd.setInt(1, 9999);
+			pVmd.setString(2, "A CADASTRAR");
+			pVmd.setString(3, "");
+			
+			pVmd.executeUpdate();
+			
 			System.out.println("Funcionou FABRI");
 			pVmd.close();
 			pPg.close();
 			
-			a.progressBar2.setValue(0);
+			progressBar2.setValue(0);
 
 		}
 	}

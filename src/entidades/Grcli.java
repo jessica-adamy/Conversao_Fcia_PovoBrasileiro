@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javax.swing.JProgressBar;
+
 import tela.App;
 import conexao.Conexao;
 
@@ -21,7 +23,7 @@ public class Grcli {
 		}
 	}
 	
-	public void importa() throws Exception {
+	public void importa(JProgressBar progressBar2) throws Exception {
 		String pgGRCLI = "select cod_grupo, nom_grupo from cadgrcli";
 		String vGRCLI = "Insert Into GRCLI (Cod_Grpcli, Des_Grpcli) Values (?,?)";
 		try (PreparedStatement pVmd = vmd.prepareStatement(vGRCLI);
@@ -31,7 +33,7 @@ public class Grcli {
 			
 			// contar a qtde de registros
 			int registros = a.contaRegistros("cadgrcli");
-			a.progressBar2.setMaximum(registros);
+			progressBar2.setMaximum(registros);
 			registros = 0;
 			
 			while (rs.next()) {
@@ -48,13 +50,13 @@ public class Grcli {
 				pVmd.executeUpdate();
 
 				registros++;
-				a.progressBar2.setValue(registros);
+				progressBar2.setValue(registros);
 			}
 			System.out.println("Funcionou GRCLI");
 			pVmd.close();
 			pPg.close();
 			
-			a.progressBar2.setValue(0);
+			progressBar2.setValue(0);
 
 		}
 	}

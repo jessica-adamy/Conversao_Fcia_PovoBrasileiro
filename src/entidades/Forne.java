@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javax.swing.JProgressBar;
+
 import tela.App;
 
 import conexao.Conexao;
@@ -22,7 +24,7 @@ public class Forne {
 		}
 	}
 	
-	public void importa() throws Exception {
+	public void importa(JProgressBar progressBar2) throws Exception {
 		String pgFORNE = "select cod_fornec, nom_fornec, num_cnpj, num_inscest, cid_fornec, est_fornec, cod_municipio, end_fornec, bai_fornec, cep_fornec, cep_fornec, num_fone, num_fax, nom_vendedor, nom_observ from cadforne";
 		String vFORNE = "Insert Into FORNE (Cod_Fornec, Des_RazSoc, Des_Fantas, Num_CgcCpf, Num_CgfRg, Des_Cidade, Des_Estado, Cod_RegTri, Cod_IBGE, Des_Endere, Des_Bairro, Num_Cep, Num_Fone, Num_Fax, Nom_Contat, Des_Observ, Flg_Bloque) Values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)";
 		try (PreparedStatement pVmd = vmd.prepareStatement(vFORNE);
@@ -32,7 +34,7 @@ public class Forne {
 			
 			// contar a qtde de registros
 			int registros = a.contaRegistros("cadforne");
-			a.progressBar2.setMaximum(registros);
+			progressBar2.setMaximum(registros);
 			registros = 0;
 			
 			while (rs.next()) {
@@ -159,13 +161,13 @@ public class Forne {
 				pVmd.executeUpdate();
 
 				registros++;
-				a.progressBar2.setValue(registros);
+				progressBar2.setValue(registros);
 			}
 			System.out.println("Funcionou FORNE");
 			pVmd.close();
 			pPg.close();
 			
-			a.progressBar2.setValue(0);
+			progressBar2.setValue(0);
 
 		}
 	}

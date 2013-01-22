@@ -6,12 +6,14 @@ import java.sql.SQLException;
 
 public class Conexao {
 	
-	private static Connection sqlConn = null, sqlConnAux = null;
+	private static Connection sqlConn = null, sqlConnAux = null, sqlConnConsulta = null;
 	private static Connection postgresConn = null, postgresConnAux = null;
 	
 	public static String SQL_SERVIDOR = "";
 	public static String SQL_BANCO = "";
 	public static String PostGres_BANCO = "";
+	public static String SQL_SERVIDOR_CONSULTA = "";
+	public static String SQL_BANCO_CONSULTA = "";
 	
 //	Conexão SqlServer
 	public static Connection getSqlConnection() {
@@ -48,6 +50,25 @@ public class Conexao {
 			System.out.println("Erro de drive: " + e.getMessage());
 		}
 		return sqlConnAux;
+	}
+	
+//	Conexão Banco de Consulta SqlServer
+	public static Connection getSqlConnectionConsulta() {
+		try {
+			if (sqlConnConsulta == null || sqlConnConsulta.isClosed()) {			
+				String url = "jdbc:jtds:sqlserver://" + SQL_SERVIDOR_CONSULTA + "/" + SQL_BANCO_CONSULTA;
+				String usuario = "sa";
+				String senha = "vls021130";
+				Class.forName("net.sourceforge.jtds.jdbc.Driver");
+				sqlConnConsulta = DriverManager.getConnection(url, usuario, senha);
+				System.out.println("conectou " + SQL_BANCO_CONSULTA);
+			}
+		} catch (SQLException e) {
+			System.out.println("Ocorreu um erro: " + e.getMessage());
+		} catch (ClassNotFoundException e) {
+			System.out.println("Erro de drive: " + e.getMessage());
+		}
+		return sqlConnConsulta;
 	}
 	
 //	Conexão Postgres

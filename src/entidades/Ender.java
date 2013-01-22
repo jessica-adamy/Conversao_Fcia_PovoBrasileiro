@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javax.swing.JProgressBar;
+
 import tela.App;
 import conexao.Conexao;
 
@@ -18,7 +20,7 @@ public class Ender {
 		try (Statement stmt = vmd.createStatement()) {
 			stmt.executeUpdate("DELETE FROM CLXED");
 			stmt.close();
-			System.out.println("Deletou");
+			System.out.println("Deletou CLXED");
 		}
 	}
 	
@@ -26,10 +28,10 @@ public class Ender {
 		try (Statement stmt = vmd.createStatement()) {
 			stmt.executeUpdate("DELETE FROM ENDER");
 			stmt.close();
-			System.out.println("Deletou");
+			System.out.println("Deletou ENDER");
 		}
 	}
-	public void importa() throws Exception {
+	public void importa(JProgressBar progressBar2) throws Exception {
 		String msCLIEN_ENDER = "select cod_cliente, num_fone, end_cliente, bai_cliente, cep_cliente, cid_cliente, est_cliente, nom_cliente, dat_cadastro from cadclien";
 		String vENDER = "Insert Into ENDER (Cod_EndFon, Des_Endere, Des_Bairro, Num_Cep, Des_Cidade, Des_Estado, Nom_Contat, Dat_Cadast) Values (?,?,?,?,?,?,?,?)";
 		String vCLXED = "Insert Into CLXED (Cod_Client, Cod_EndFon) Values (?,?)";
@@ -41,7 +43,7 @@ public class Ender {
 			
 			// contar a qtde de registros
 			int registros = a.contaRegistros("cadclien");
-			a.progressBar2.setMaximum(registros);
+			progressBar2.setMaximum(registros);
 			registros = 0;
 			
 			while (rs.next()) {
@@ -114,13 +116,13 @@ public class Ender {
 				pVmdCLXED.executeUpdate();
 				
 				registros++;
-				a.progressBar2.setValue(registros);
+				progressBar2.setValue(registros);
 			}
 			System.out.println("Funcionou ENDER");
 			pVmd.close();
 			pPg.close();
 			
-			a.progressBar2.setValue(0);
+			progressBar2.setValue(0);
 
 		}
 	}
