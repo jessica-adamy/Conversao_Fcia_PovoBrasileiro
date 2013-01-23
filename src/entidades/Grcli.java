@@ -3,7 +3,6 @@ package entidades;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 import javax.swing.JProgressBar;
 
@@ -14,14 +13,6 @@ public class Grcli {
 	Connection pg = Conexao.getPostgresConnection();
 	Connection vmd = Conexao.getSqlConnection();
 	App a = new App();
-	
-	public void deleta() throws Exception {
-		try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
-			stmt.executeUpdate("DELETE FROM GRCLI");
-			stmt.close();
-			System.out.println("Deletou GRCLI");
-		}
-	}
 	
 	public void importa(JProgressBar progressBar2) throws Exception {
 		String pgGRCLI = "select cod_grupo, nom_grupo from cadgrcli";

@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 import javax.swing.JProgressBar;
 
@@ -15,14 +14,6 @@ public class Clien {
 	Connection pg = Conexao.getPostgresConnection();
 	Connection vmd = Conexao.getSqlConnection();
 	App a = new App();
-	
-	public void deleta() throws Exception {
-		try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
-			stmt.executeUpdate("DELETE FROM CLIEN");
-			stmt.close();
-			System.out.println("Deletou CLIEN");
-		}
-	}
 	
 	public void importa(JProgressBar progressBar2) throws Exception {
 		String pgCLIEN = "select cod_cliente, nom_cliente, dat_cadastro, cod_grupo, sex_cliente, num_cnpj, num_ident, num_celular, nom_email, dat_nascto, num_fone, nom_pai, nom_mae, est_cliente from cadclien";

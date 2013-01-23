@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 import javax.swing.JProgressBar;
 
@@ -16,21 +15,6 @@ public class Ender {
 	Connection vmd = Conexao.getSqlConnection();
 	App a = new App();
 	
-	public void deleta_clxed() throws Exception {
-		try (Statement stmt = vmd.createStatement()) {
-			stmt.executeUpdate("DELETE FROM CLXED");
-			stmt.close();
-			System.out.println("Deletou CLXED");
-		}
-	}
-	
-	public void deleta_ender() throws Exception {
-		try (Statement stmt = vmd.createStatement()) {
-			stmt.executeUpdate("DELETE FROM ENDER");
-			stmt.close();
-			System.out.println("Deletou ENDER");
-		}
-	}
 	public void importa(JProgressBar progressBar2) throws Exception {
 		String msCLIEN_ENDER = "select cod_cliente, num_fone, end_cliente, bai_cliente, cep_cliente, cid_cliente, est_cliente, nom_cliente, dat_cadastro from cadclien";
 		String vENDER = "Insert Into ENDER (Cod_EndFon, Des_Endere, Des_Bairro, Num_Cep, Des_Cidade, Des_Estado, Nom_Contat, Dat_Cadast) Values (?,?,?,?,?,?,?,?)";

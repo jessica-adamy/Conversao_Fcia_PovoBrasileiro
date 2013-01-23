@@ -3,7 +3,6 @@ package entidades;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 import javax.swing.JProgressBar;
 
@@ -14,14 +13,6 @@ public class Fabri {
 	Connection pg = Conexao.getPostgresConnection();
 	Connection vmd = Conexao.getSqlConnection();
 	App a = new App();
-	
-	public void deleta() throws Exception {
-		try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
-			stmt.executeUpdate("DELETE FROM FABRI");
-			stmt.close();
-			System.out.println("Deletou FABRI");
-		}
-	}
 	
 	public void importa(JProgressBar progressBar2) throws Exception {
 		String pgFABRI = "select cod_laborat, nom_laborat, num_cnpj from cadlabor";

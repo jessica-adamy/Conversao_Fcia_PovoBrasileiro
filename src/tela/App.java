@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JButton;
@@ -29,6 +30,7 @@ import entidades.Fabri;
 import entidades.Forne;
 import entidades.Grcli;
 import entidades.Produ;
+import entidades.Prxlj;
 
 public class App extends JFrame {
 
@@ -36,21 +38,22 @@ public class App extends JFrame {
 
 	private JCheckBox cboxPRODU;
 	private JCheckBox cboxFABRI;
-	private JTextField txtPGBanco;
-	private JTextField txtVmdServidor;
-	private JTextField txtVmdBanco;
-	private JButton btn_limpa_dados;
-	private JProgressBar progressBar;
-	private JButton btn_processa;
-	public JProgressBar progressBar2;
 	private JCheckBox cboxFORNE;
 	private JCheckBox cboxCLIEN;
 	private JCheckBox cboxENDER;
 	private JCheckBox cboxGRCLI;
-	private JLabel lblVmdDeConsulta;
+	private JCheckBox cboxPRXLJ;
+	private JTextField txtPGBanco;
+	private JTextField txtVmdServidor;
+	private JTextField txtVmdBanco;
 	private JTextField txtVmdServidorConsulta;
-	private JLabel lblBanco;
 	private JTextField txtVmdBancoConsulta;
+	private JButton btn_limpa_dados;
+	private JButton btn_processa;
+	private JProgressBar progressBar;
+	public 	JProgressBar progressBar2;
+	private JLabel lblVmdDeConsulta;
+	private JLabel lblBanco;
 
 	/**
 	 * Launch the application.
@@ -142,32 +145,31 @@ public class App extends JFrame {
 				Grcli grcli = new Grcli();
 				Clien clien = new Clien();
 				Ender ender = new Ender();
-				Produ produ = new Produ();											
+				Produ produ = new Produ();	
+				Prxlj prxlj = new Prxlj();
 				if (resp == 0) {
 					if (cboxFABRI.isSelected() && cboxPRODU.isSelected() 
 						 && cboxCLIEN.isSelected() && cboxFORNE.isSelected() 
 						 && cboxENDER.isSelected() && cboxGRCLI.isSelected()) {
 						
-						int i = 1;
-						
 						// APAGANDO DADOS
-						produ.deleta_prxlj();
-						produ.deleta_produ();
-						fabri.deleta();
-						forne.deleta();
-						clien.deleta();
-						grcli.deleta();
-						ender.deleta_clxed();
-						ender.deleta_ender();
-						progressBar.setValue(i);
+						deleta("PRXLJ");
+						deleta("PRODU");
+						deleta("FABRI");
+						deleta("FORNE");
+						deleta("CLIEN");
+						deleta("GRCLI");
+						deleta("CLXED");
+						deleta("ENDER");
+						
+						progressBar.setValue(progressBar.getValue() + 1);
 					}
 
 					//IMPORTAÇÃO
 					//FABRI
 					if (cboxFABRI.isSelected()) {
 						System.out.println("COMEÇOU FABRI");
-						fabri.deleta();
-						progressBar.setValue(progressBar.getValue() + 1);
+						deleta("FABRI");
 						fabri.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
@@ -175,18 +177,23 @@ public class App extends JFrame {
 					//PRODU
 					if (cboxPRODU.isSelected()) {
 						System.out.println("COMEÇOU PRODU");
-						produ.deleta_prxlj();
-						produ.deleta_produ();
-						progressBar.setValue(progressBar.getValue() + 1);
+						deleta("PRXLJ");
+						deleta("PRODU");
 						produ.importa(progressBar2);
+						progressBar.setValue(progressBar.getValue() + 1);
+					}
+					
+					//PRXLJ
+					if (cboxPRXLJ.isSelected()) {
+						System.out.println("COMEÇOU PRXLJ");
+						prxlj.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
 					//FORNE					
 					if (cboxFORNE.isSelected()) {
 						System.out.println("COMEÇOU FORNE");
-						forne.deleta();
-						progressBar.setValue(progressBar.getValue() + 1);
+						deleta("FORNE");
 						forne.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
@@ -194,8 +201,7 @@ public class App extends JFrame {
 					// GRCLI
 					if (cboxGRCLI.isSelected()) {
 						System.out.println("COMEÇOU GRCLI");
-						grcli.deleta();
-						progressBar.setValue(progressBar.getValue() + 1);
+						deleta("GRCLI");
 						grcli.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
@@ -203,8 +209,7 @@ public class App extends JFrame {
 					//CLIEN
 					if (cboxCLIEN.isSelected()) {
 						System.out.println("COMEÇOU CLIEN");
-						clien.deleta();
-						progressBar.setValue(progressBar.getValue() + 1);
+						deleta("CLIEN");
 						clien.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
@@ -212,10 +217,8 @@ public class App extends JFrame {
 					//ENDER
 					if (cboxENDER.isSelected()) {
 						System.out.println("COMEÇOU ENDER");
-						ender.deleta_clxed();
-						progressBar.setValue(progressBar.getValue() + 1);
-						ender.deleta_ender();
-						progressBar.setValue(progressBar.getValue() + 1);
+						deleta("CLXED");
+						deleta("ENDER");
 						ender.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
@@ -280,7 +283,7 @@ public class App extends JFrame {
 			@Override
 			protected Void doInBackground() throws Exception {
 				progressBar.setValue(0);
-				progressBar.setMaximum(6);
+				progressBar.setMaximum(7);
 				btn_limpa_dados.setEnabled(false);
 				btn_processa.setEnabled(false);
 				int resp = JOptionPane.showConfirmDialog(panel, "Confirma?",
@@ -291,46 +294,45 @@ public class App extends JFrame {
 				// APAGANDO DADOS 
 				// PRODUTO
 				if (cboxPRODU.isSelected()) {
-					Produ produ = new Produ();
-					produ.deleta_prxlj();
-					produ.deleta_produ();
-					progressBar.setValue(1);
+					deleta("PRXLJ");
+					deleta("PRODU");
+					progressBar.setValue(progressBar.getValue() + 1);
+				}
+				
+				if (cboxPRXLJ.isSelected()) {
+					deleta("PRXLJ");
+					progressBar.setValue(progressBar.getValue() + 1);
 				}
 
 				// FABRI
 				if (cboxFABRI.isSelected()) {
-					Fabri fabri = new Fabri();
-					fabri.deleta();
-					progressBar.setValue(2);
+					deleta("FABRI");
+					progressBar.setValue(progressBar.getValue() + 1);
 				}
 
 				//FORNE					
 				if (cboxFORNE.isSelected()) {
-					Forne forne = new Forne();
-					forne.deleta();
-					progressBar.setValue(3);
+					deleta("FORNE");
+					progressBar.setValue(progressBar.getValue() + 1);
 				}
 				
 				//CLIEN					
 				if (cboxCLIEN.isSelected()) {
-					Clien clien = new Clien();
-					clien.deleta();
-					progressBar.setValue(4);
+					deleta("CLIEN");
+					progressBar.setValue(progressBar.getValue() + 1);
 				}
 				
 				//GRCLI					
 				if (cboxGRCLI.isSelected()) {
-					Grcli grcli = new Grcli();
-					grcli.deleta();
-					progressBar.setValue(5);
+					deleta("GRCLI");
+					progressBar.setValue(progressBar.getValue() + 1);
 				}
 				
 				//ENDER
 				if (cboxENDER.isSelected()) {
-					Ender ender = new Ender();
-					ender.deleta_clxed();
-					ender.deleta_ender();
-					progressBar.setValue(6);
+					deleta("CLXED");
+					deleta("ENDER");
+					progressBar.setValue(progressBar.getMaximum());
 				}
 				
 				JOptionPane.showMessageDialog(getContentPane(),
@@ -395,25 +397,29 @@ public class App extends JFrame {
 		cboxFABRI.setSelected(true);
 		panel_1.add(cboxFABRI, "cell 0 0");
 		
-		cboxFORNE = new JCheckBox("3-FORNE");
-		cboxFORNE.setSelected(true);
-		panel_1.add(cboxFORNE, "cell 1 0");
+		cboxPRXLJ = new JCheckBox("3-PRXLJ");
+		cboxPRXLJ.setSelected(true);
+		panel_1.add(cboxPRXLJ, "cell 1 0");
 		
-		cboxCLIEN = new JCheckBox("5-CLIEN");
-		cboxCLIEN.setSelected(true);
-		panel_1.add(cboxCLIEN, "cell 2 0");
+		cboxGRCLI = new JCheckBox("5-GRCLI");
+		cboxGRCLI.setSelected(true);
+		panel_1.add(cboxGRCLI, "cell 2 0");
+		
+		cboxENDER = new JCheckBox("7-ENDER");
+		cboxENDER.setSelected(true);
+		panel_1.add(cboxENDER, "cell 3 0");
 
 		cboxPRODU = new JCheckBox("2-PRODU");
 		cboxPRODU.setSelected(true);
 		panel_1.add(cboxPRODU, "cell 0 1");
 		
-		cboxGRCLI = new JCheckBox("4-GRCLI");
-		cboxGRCLI.setSelected(true);
-		panel_1.add(cboxGRCLI, "cell 1 1");
+		cboxFORNE = new JCheckBox("4-FORNE");
+		cboxFORNE.setSelected(true);
+		panel_1.add(cboxFORNE, "cell 1 1");
 		
-		cboxENDER = new JCheckBox("6-ENDER");
-		cboxENDER.setSelected(true);
-		panel_1.add(cboxENDER, "cell 2 1");
+		cboxCLIEN = new JCheckBox("6-CLIEN");
+		cboxCLIEN.setSelected(true);
+		panel_1.add(cboxCLIEN, "cell 2 1");
 
 		progressBar = new JProgressBar();
 		progressBar.setMaximum(14);
@@ -435,9 +441,14 @@ public class App extends JFrame {
 		}
 	}
 	
-	public JCheckBox getCboxPRXLJ() {
-		return cboxCLIEN;
+	public void deleta(String tabela) throws Exception {
+		try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
+			stmt.executeUpdate("DELETE FROM " +tabela);
+			stmt.close();
+			System.out.println("Deletou " +tabela);
+		}
 	}
+	
 	public JCheckBox getCboxENDER() {
 		return cboxENDER;
 	}
@@ -452,5 +463,11 @@ public class App extends JFrame {
 	}
 	public JCheckBox getCboxFORNE() {
 		return cboxFORNE;
+	}
+	public JCheckBox getCboxPRXLJ() {
+		return cboxPRXLJ;
+	}
+	public JCheckBox getCboxCLIEN() {
+		return cboxCLIEN;
 	}
 }

@@ -5,7 +5,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.swing.JProgressBar;
 
@@ -18,29 +17,12 @@ public class Produ {
 	
 	App a = new App();
 	
-	public void deleta_produ() throws Exception {
-		try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
-			stmt.executeUpdate("DELETE FROM PRODU");
-			stmt.close();
-			System.out.println("Deletou PRODU");
-		}
-	}
-	
-	public void deleta_prxlj() throws Exception {
-		try (Statement stmt = Conexao.getSqlConnection().createStatement()) {
-			stmt.executeUpdate("DELETE FROM PRXLJ");
-			stmt.close();
-			System.out.println("Deletou PRXLJ");
-		}
-	}
-	
 	public void importa(JProgressBar progressBar2) throws Exception {
 		String pgPRODU= "select cod_reduzido, nom_produto, dat_cadastro, cod_laborat, cod_barra, vlr_venda, vlr_custo, flg_ativo, flg_descvenda from cadprodu";
 		String vPRODU = "Insert Into Produ (Cod_Produt, Des_Produt, Des_Resumi, Des_Comple, Dat_Implan, Cod_Fabric, Cod_Ean, Cod_Classi, Cod_Seccao, Cod_GrpPrc) Values (?,?,?,?,?,?,?,?,?,?)";
-		String vPRXLJ = "Update PRXLJ set Prc_VenAtu = ?, Prc_CusLiq = ?, Prc_CusLiqMed = ?, Prc_CusEnt = ?, Flg_BlqCom = ?, Flg_BlqVen = ?, Flg_BlqDsc=? where Cod_Produt = ?";
+		
 		try (PreparedStatement pVmd = vmd.prepareStatement(vPRODU);
-			 PreparedStatement pPg = pg.prepareStatement(pgPRODU);
-			 PreparedStatement prxljVmd = vmd.prepareStatement(vPRXLJ)) {
+			 PreparedStatement pPg = pg.prepareStatement(pgPRODU)) {
 			
 			ResultSet rs = pPg.executeQuery();
 			
@@ -86,19 +68,7 @@ public class Produ {
 				
 				pVmd.executeUpdate();
 				
-				// GRAVA NA PRXLJ
-				prxljVmd.setString(1, rs.getString("vlr_venda"));
-				prxljVmd.setString(2, rs.getString("vlr_custo"));
-				prxljVmd.setString(3, rs.getString("vlr_custo"));
-				prxljVmd.setString(4, rs.getString("vlr_custo"));
-				prxljVmd.setBoolean(5, rs.getString("flg_ativo").equals("A") ? true : false);
-				prxljVmd.setBoolean(6, rs.getString("flg_ativo").equals("A") ? true : false);
-				prxljVmd.setBoolean(7, rs.getBoolean("flg_descvenda"));
-				prxljVmd.setInt(8, rs.getInt("cod_reduzido"));
-				
-				prxljVmd.executeUpdate();
-				
-				cadastraCamposQueFaltamPRODU(rs.getString("cod_barra"));
+				cadastraCamposQueFaltamPRODU(ean);
 
 				registros++;
 				progressBar2.setValue(registros);
@@ -131,8 +101,9 @@ public class Produ {
 			    
 			    if (rs.getInt("Cod_SubBas") != 0) {
 			    	v2.setInt(6, rs.getInt("Cod_SubBas"));
-			    }else
+			    } else {
 			    	v2.setString(6, null);
+			    }
 			    
 			    v2.setString(7, rs.getString("Cod_GrpPrc"));
 			    v2.setString(8, rs.getString("Cod_AbcFar"));
