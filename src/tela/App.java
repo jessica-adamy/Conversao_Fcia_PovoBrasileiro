@@ -54,6 +54,8 @@ public class App extends JFrame {
 	public 	JProgressBar progressBar2;
 	private JLabel lblVmdDeConsulta;
 	private JLabel lblBanco;
+	private JLabel label_nome_tabela;
+	private JLabel label_registros;
 
 	/**
 	 * Launch the application.
@@ -162,7 +164,8 @@ public class App extends JFrame {
 						System.out.println("COMEÇOU FABRI");
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("FABRI");
-						fabri.importa(progressBar2);
+						label_nome_tabela.setText("Importando FABRI");
+						fabri.importa(progressBar2, label_registros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 						
@@ -172,7 +175,8 @@ public class App extends JFrame {
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("PRXLJ");
 						deleta("PRODU");
-						produ.importa(progressBar2);
+						label_nome_tabela.setText("Importando PRODU");
+						produ.importa(progressBar2, label_registros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
@@ -180,7 +184,8 @@ public class App extends JFrame {
 					if (cboxPRXLJ.isSelected()) {
 						System.out.println("COMEÇOU PRXLJ");
 						progressBar.setValue(progressBar.getValue() + 1);
-						prxlj.importa(progressBar2);
+						label_nome_tabela.setText("Importando PRXLJ");
+						prxlj.importa(progressBar2, label_registros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
@@ -189,7 +194,8 @@ public class App extends JFrame {
 						System.out.println("COMEÇOU FORNE");
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("FORNE");
-						forne.importa(progressBar2);
+						label_nome_tabela.setText("Importando FORNE");
+						forne.importa(progressBar2, label_registros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
@@ -198,7 +204,8 @@ public class App extends JFrame {
 						System.out.println("COMEÇOU GRCLI");
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("GRCLI");
-						grcli.importa(progressBar2);
+						label_nome_tabela.setText("Importando GRCLI");
+						grcli.importa(progressBar2, label_registros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
@@ -207,7 +214,8 @@ public class App extends JFrame {
 						System.out.println("COMEÇOU CLIEN");
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("CLIEN");
-						clien.importa(progressBar2);
+						label_nome_tabela.setText("Importando CLIEN");
+						clien.importa(progressBar2, label_registros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
@@ -217,7 +225,8 @@ public class App extends JFrame {
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("CLXED");
 						deleta("ENDER");
-						ender.importa(progressBar2);
+						label_nome_tabela.setText("Importando ENDER");
+						ender.importa(progressBar2, label_registros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					progressBar.setValue(progressBar.getMaximum());
@@ -238,6 +247,8 @@ public class App extends JFrame {
 			protected void done() {
 				try {
 					progressBar.setValue(0);
+					label_nome_tabela.setText("");
+					label_registros.setText("");
 					btn_limpa_dados.setEnabled(true);
 					btn_processa.setEnabled(true);
 					getContentPane().setCursor(Cursor.getDefaultCursor());
@@ -389,7 +400,7 @@ public class App extends JFrame {
 		JPanel panel_1 = new JPanel();
 		panel_1.setToolTipText("");
 		getContentPane().add(panel_1, BorderLayout.CENTER);
-		panel_1.setLayout(new MigLayout("", "[][][][][][][][grow,fill]", "[][][][][][][][][][][][]"));
+		panel_1.setLayout(new MigLayout("", "[][][][][][][][][grow,fill]", "[][][][][][][][][][][][][]"));
 		
 		cboxFABRI = new JCheckBox("1-FABRI");
 		cboxFABRI.setSelected(true);
@@ -418,12 +429,18 @@ public class App extends JFrame {
 		cboxCLIEN = new JCheckBox("6-CLIEN");
 		cboxCLIEN.setSelected(true);
 		panel_1.add(cboxCLIEN, "cell 2 1");
+		
+		label_nome_tabela = new JLabel("");
+		panel_1.add(label_nome_tabela, "flowx,cell 0 9");
+		
+		label_registros = new JLabel("");
+		panel_1.add(label_registros, "cell 1 9");
 
 		progressBar = new JProgressBar();
-		panel_1.add(progressBar, "cell 0 10 8 1,growx");
+		panel_1.add(progressBar, "cell 0 11 9 1,growx");
 
 		progressBar2 = new JProgressBar();
-		panel_1.add(progressBar2, "cell 0 11 8 1,growx");
+		panel_1.add(progressBar2, "cell 0 12 9 1,growx");
 
 	}
 

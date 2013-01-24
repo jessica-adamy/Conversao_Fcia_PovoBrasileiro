@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
 import tela.App;
@@ -14,7 +15,7 @@ public class Fabri {
 	Connection vmd = Conexao.getSqlConnection();
 	App a = new App();
 	
-	public void importa(JProgressBar progressBar2) throws Exception {
+	public void importa(JProgressBar progressBar2, JLabel lblNewLabel_5) throws Exception {
 		String pgFABRI = "select cod_laborat, nom_laborat, num_cnpj from cadlabor";
 		String vFABRI = "Insert Into FABRI (Cod_Fabric, Des_Fabric, Num_Cnpj) Values (?,?,?)";
 		try (PreparedStatement pVmd = vmd.prepareStatement(vFABRI);
@@ -24,6 +25,7 @@ public class Fabri {
 			
 			// contar a qtde de registros
 			int registros = a.contaRegistros("cadlabor");
+			int total = registros;
 			progressBar2.setMaximum(registros);
 			registros = 0;
 			
@@ -49,6 +51,7 @@ public class Fabri {
 				pVmd.executeUpdate();
 
 				registros++;
+				lblNewLabel_5.setText(registros+"/"+total);
 				progressBar2.setValue(registros);
 			}
 			
@@ -67,5 +70,4 @@ public class Fabri {
 
 		}
 	}
-
 }

@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
 import tela.App;
@@ -15,7 +16,7 @@ public class Clien {
 	Connection vmd = Conexao.getSqlConnection();
 	App a = new App();
 	
-	public void importa(JProgressBar progressBar2) throws Exception {
+	public void importa(JProgressBar progressBar2, JLabel lblNewLabel_5) throws Exception {
 		String pgCLIEN = "select cod_cliente, nom_cliente, dat_cadastro, cod_grupo, sex_cliente, num_cnpj, num_ident, num_celular, nom_email, dat_nascto, num_fone, nom_pai, nom_mae, est_cliente from cadclien";
 		String vCLIEN = "Insert Into CLIEN (Cod_Client, Nom_Client, Dat_Cadast, Cod_GrpCli, Sex_Client, Num_CpfCgc, Num_RgCgf, Num_FonCel, Des_Email, Dia_Nascim, Mes_Nascim, Ano_Nascim, Cod_EndRes, Cod_RegTri) Values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		try (PreparedStatement pVmd = vmd.prepareStatement(vCLIEN);
@@ -25,6 +26,7 @@ public class Clien {
 			
 			// contar a qtde de registros
 			int registros = a.contaRegistros("cadclien");
+			int total = registros;
 			progressBar2.setMaximum(registros);
 			registros = 0;
 			
@@ -126,6 +128,7 @@ public class Clien {
 				pVmd.executeUpdate();
 
 				registros++;
+				lblNewLabel_5.setText(registros+"/"+total);
 				progressBar2.setValue(registros);
 			}
 			System.out.println("Funcionou CLIEN");

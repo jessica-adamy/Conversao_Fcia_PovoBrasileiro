@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
 import tela.App;
@@ -14,7 +15,7 @@ public class Prxlj {
 	Connection vmd = Conexao.getSqlConnection();
 	App a = new App();
 	
-	public void importa(JProgressBar progressBar2) throws Exception {
+	public void importa(JProgressBar progressBar2, JLabel lblNewLabel_5) throws Exception {
 
 		String mProdu = "select cod_reduzido, nom_produto, dat_cadastro, cod_laborat, cod_barra, vlr_venda, vlr_custo, flg_ativo, flg_descvenda from cadprodu";
 		String vPrxlj = "Update PRXLJ set Prc_VenAtu = ?, Prc_CusLiq = ?, Prc_CusLiqMed = ?, Prc_CusEnt = ?, Flg_BlqCom = ?, Flg_BlqVen = ?, Flg_BlqDsc=? where Cod_Produt = ?";
@@ -25,6 +26,7 @@ public class Prxlj {
 			
 			// contar a qtde de registros
 			int registros = a.contaRegistrosVMD("PRXLJ");
+			int total = registros;
 			progressBar2.setMaximum(registros);
 			registros = 0;
 
@@ -51,6 +53,7 @@ public class Prxlj {
 				pVmd.executeUpdate();
 
 				registros++;
+				lblNewLabel_5.setText(registros+"/"+total);
 				progressBar2.setValue(registros);
 
 			}

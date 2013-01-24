@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
 import tela.App;
@@ -15,7 +16,7 @@ public class Forne {
 	Connection vmd = Conexao.getSqlConnection();
 	App a = new App();
 	
-	public void importa(JProgressBar progressBar2) throws Exception {
+	public void importa(JProgressBar progressBar2, JLabel lblNewLabel_5) throws Exception {
 		String pgFORNE = "select cod_fornec, nom_fornec, num_cnpj, num_inscest, cid_fornec, est_fornec, cod_municipio, end_fornec, bai_fornec, cep_fornec, cep_fornec, num_fone, num_fax, nom_vendedor, nom_observ from cadforne";
 		String vFORNE = "Insert Into FORNE (Cod_Fornec, Des_RazSoc, Des_Fantas, Num_CgcCpf, Num_CgfRg, Des_Cidade, Des_Estado, Cod_RegTri, Cod_IBGE, Des_Endere, Des_Bairro, Num_Cep, Num_Fone, Num_Fax, Nom_Contat, Des_Observ, Flg_Bloque) Values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)";
 		try (PreparedStatement pVmd = vmd.prepareStatement(vFORNE);
@@ -25,6 +26,7 @@ public class Forne {
 			
 			// contar a qtde de registros
 			int registros = a.contaRegistros("cadforne");
+			int total = registros;
 			progressBar2.setMaximum(registros);
 			registros = 0;
 			
@@ -152,6 +154,7 @@ public class Forne {
 				pVmd.executeUpdate();
 
 				registros++;
+				lblNewLabel_5.setText(registros+"/"+total);
 				progressBar2.setValue(registros);
 			}
 			System.out.println("Funcionou FORNE");

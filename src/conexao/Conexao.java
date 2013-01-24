@@ -75,9 +75,9 @@ public class Conexao {
 	public static Connection getPostgresConnection() {
 		try {
 			if (postgresConn == null || postgresConn.isClosed()) {
-				String url = "jdbc:postgresql://localhost:5432/"+PostGres_BANCO;
+				String url = "jdbc:postgresql://localhost:5433/"+PostGres_BANCO;
 				String usuario = "postgres";
-				String senha = "Vls021130";
+				String senha = "vls021130";
 				Class.forName("org.postgresql.Driver");
 				postgresConn = DriverManager.getConnection(url, usuario, senha);
 				postgresConn.setAutoCommit(true);
@@ -93,9 +93,9 @@ public class Conexao {
 	public static Connection getPostgresConnectionAux() {
 		try {
 			if (postgresConnAux == null || postgresConnAux.isClosed()) {
-				String url = "jdbc:postgresql://localhost:5432/"+PostGres_BANCO;
+				String url = "jdbc:postgresql://localhost:5433/"+PostGres_BANCO;
 				String usuario = "postgres";
-				String senha = "Vls021130";
+				String senha = "vls021130";
 				Class.forName("org.postgresql.Driver");
 				postgresConnAux = DriverManager.getConnection(url, usuario, senha);
 				postgresConnAux.setAutoCommit(true);

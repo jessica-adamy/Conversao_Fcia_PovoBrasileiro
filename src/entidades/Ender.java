@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
 import tela.App;
@@ -15,7 +16,7 @@ public class Ender {
 	Connection vmd = Conexao.getSqlConnection();
 	App a = new App();
 	
-	public void importa(JProgressBar progressBar2) throws Exception {
+	public void importa(JProgressBar progressBar2, JLabel lblNewLabel_5) throws Exception {
 		String msCLIEN_ENDER = "select cod_cliente, num_fone, end_cliente, bai_cliente, cep_cliente, cid_cliente, est_cliente, nom_cliente, dat_cadastro from cadclien";
 		String vENDER = "Insert Into ENDER (Cod_EndFon, Des_Endere, Des_Bairro, Num_Cep, Des_Cidade, Des_Estado, Nom_Contat, Dat_Cadast) Values (?,?,?,?,?,?,?,?)";
 		String vCLXED = "Insert Into CLXED (Cod_Client, Cod_EndFon) Values (?,?)";
@@ -27,6 +28,7 @@ public class Ender {
 			
 			// contar a qtde de registros
 			int registros = a.contaRegistros("cadclien");
+			int total = registros;
 			progressBar2.setMaximum(registros);
 			registros = 0;
 			
@@ -100,6 +102,7 @@ public class Ender {
 				pVmdCLXED.executeUpdate();
 				
 				registros++;
+				lblNewLabel_5.setText(registros+"/"+total);
 				progressBar2.setValue(registros);
 			}
 			System.out.println("Funcionou ENDER");
