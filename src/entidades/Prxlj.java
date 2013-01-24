@@ -24,14 +24,12 @@ public class Prxlj {
 			ResultSet rs = pMs.executeQuery();
 			
 			// contar a qtde de registros
-			int registros = a.contaRegistros("cadprodu");
+			int registros = a.contaRegistrosVMD("PRXLJ");
 			progressBar2.setMaximum(registros);
 			registros = 0;
 
 			while (rs.next()) {
 				// grava no varejo
-				
-				int codigo =  rs.getInt("cod_reduzido");
 				String vlr_venda = rs.getString("vlr_venda"); 
 				pVmd.setString(1, vlr_venda);
 				
@@ -41,18 +39,18 @@ public class Prxlj {
 				pVmd.setString(4, vlr_custo);
 				
 				String flg_ativo = rs.getString("flg_ativo");
-				pVmd.setBoolean(5, flg_ativo.equals("A") ? true : false);
-				pVmd.setBoolean(6, flg_ativo.equals("A") ? true : false);
+				pVmd.setBoolean(5, "A".equals(flg_ativo) ? true : "I".equals(flg_ativo) ? false : false);
+				pVmd.setBoolean(6, "A".equals(flg_ativo) ? true : "I".equals(flg_ativo) ? false : false);
 				
 				String  flg_descvenda = rs.getString("flg_descvenda");
-				pVmd.setBoolean(7, flg_descvenda.equals("A") ? true : false);
+				pVmd.setBoolean(7, "S".equals(flg_descvenda) ? true : "N".equals(flg_descvenda) ? false : false);
 				
+				int codigo =  rs.getInt("cod_reduzido");
 				pVmd.setInt(8, codigo);
 				
 				pVmd.executeUpdate();
 
 				registros++;
-				System.out.println(registros);
 				progressBar2.setValue(registros);
 
 			}

@@ -120,7 +120,7 @@ public class App extends JFrame {
 		panelTop.add(lblBanco, "cell 2 2,alignx trailing");
 		
 		txtVmdBancoConsulta = new JTextField();
-		txtVmdBancoConsulta.setText("VMD_ALDESUL");
+		txtVmdBancoConsulta.setText("VMD_Consulta");
 		panelTop.add(txtVmdBancoConsulta, "cell 3 2,growx");
 		txtVmdBancoConsulta.setColumns(10);
 
@@ -139,13 +139,10 @@ public class App extends JFrame {
 				btn_limpa_dados.setEnabled(false);
 				btn_processa.setEnabled(false);
 				
-				int resp = JOptionPane.showConfirmDialog(panel, "Confirma?", "Processar Dados", JOptionPane.YES_NO_OPTION);
-				Forne forne = new Forne();
-				Fabri fabri = new Fabri();
-				Grcli grcli = new Grcli();
-				Clien clien = new Clien();
-				Ender ender = new Ender();
-				Produ produ = new Produ();	
+				int resp = JOptionPane.showConfirmDialog(panel, "Confirma?", 
+						   "Processar Dados", JOptionPane.YES_NO_OPTION);
+				Forne forne = new Forne();	Fabri fabri = new Fabri();	Grcli grcli = new Grcli(); 
+				Clien clien = new Clien();	Ender ender = new Ender();	Produ produ = new Produ();	
 				Prxlj prxlj = new Prxlj();
 				if (resp == 0) {
 					if (cboxFABRI.isSelected() && cboxPRODU.isSelected() 
@@ -153,15 +150,9 @@ public class App extends JFrame {
 						 && cboxENDER.isSelected() && cboxGRCLI.isSelected()) {
 						
 						// APAGANDO DADOS
-						deleta("PRXLJ");
-						deleta("PRODU");
-						deleta("FABRI");
-						deleta("FORNE");
-						deleta("CLIEN");
-						deleta("GRCLI");
-						deleta("CLXED");
-						deleta("ENDER");
-						
+						progressBar.setValue(progressBar.getValue() + 1);
+						deleta("PRXLJ"); deleta("PRODU"); deleta("FABRI"); deleta("FORNE");
+						deleta("CLIEN"); deleta("GRCLI"); deleta("CLXED"); deleta("ENDER");
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 
@@ -169,6 +160,7 @@ public class App extends JFrame {
 					//FABRI
 					if (cboxFABRI.isSelected()) {
 						System.out.println("COMEÇOU FABRI");
+						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("FABRI");
 						fabri.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
@@ -177,6 +169,7 @@ public class App extends JFrame {
 					//PRODU
 					if (cboxPRODU.isSelected()) {
 						System.out.println("COMEÇOU PRODU");
+						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("PRXLJ");
 						deleta("PRODU");
 						produ.importa(progressBar2);
@@ -186,6 +179,7 @@ public class App extends JFrame {
 					//PRXLJ
 					if (cboxPRXLJ.isSelected()) {
 						System.out.println("COMEÇOU PRXLJ");
+						progressBar.setValue(progressBar.getValue() + 1);
 						prxlj.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
@@ -193,6 +187,7 @@ public class App extends JFrame {
 					//FORNE					
 					if (cboxFORNE.isSelected()) {
 						System.out.println("COMEÇOU FORNE");
+						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("FORNE");
 						forne.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
@@ -201,6 +196,7 @@ public class App extends JFrame {
 					// GRCLI
 					if (cboxGRCLI.isSelected()) {
 						System.out.println("COMEÇOU GRCLI");
+						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("GRCLI");
 						grcli.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
@@ -209,6 +205,7 @@ public class App extends JFrame {
 					//CLIEN
 					if (cboxCLIEN.isSelected()) {
 						System.out.println("COMEÇOU CLIEN");
+						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("CLIEN");
 						clien.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
@@ -217,11 +214,13 @@ public class App extends JFrame {
 					//ENDER
 					if (cboxENDER.isSelected()) {
 						System.out.println("COMEÇOU ENDER");
+						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("CLXED");
 						deleta("ENDER");
 						ender.importa(progressBar2);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
+					progressBar.setValue(progressBar.getMaximum());
 					
 					JOptionPane.showMessageDialog(getContentPane(),
 							"Processamento de dados realizado com sucesso",
@@ -232,7 +231,6 @@ public class App extends JFrame {
 							"Processamento de dados cancelado", "Informação",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
-
 				return null;
 			}
 			
@@ -422,7 +420,6 @@ public class App extends JFrame {
 		panel_1.add(cboxCLIEN, "cell 2 1");
 
 		progressBar = new JProgressBar();
-		progressBar.setMaximum(14);
 		panel_1.add(progressBar, "cell 0 10 8 1,growx");
 
 		progressBar2 = new JProgressBar();
@@ -433,6 +430,17 @@ public class App extends JFrame {
 	public int contaRegistros(String tabela) throws SQLException {
 		String sql = "SELECT count(*) qtde FROM " + tabela;
 			try (PreparedStatement ps = Conexao.getPostgresConnectionAux().prepareStatement(sql);
+					ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1);
+			}
+			return 0;
+		}
+	}
+	
+	public int contaRegistrosVMD(String tabela) throws SQLException {
+		String sql = "SELECT count(*) qtde FROM " + tabela;
+			try (PreparedStatement ps = Conexao.getSqlConnectionAux().prepareStatement(sql);
 					ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					return rs.getInt(1);
