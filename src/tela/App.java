@@ -31,6 +31,9 @@ import entidades.Forne;
 import entidades.Grcli;
 import entidades.Produ;
 import entidades.Prxlj;
+import javax.swing.JPasswordField;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 public class App extends JFrame {
 
@@ -54,8 +57,30 @@ public class App extends JFrame {
 	public 	JProgressBar progressBar2;
 	private JLabel lblVmdDeConsulta;
 	private JLabel lblBanco;
-	private JLabel label_nome_tabela;
-	private JLabel label_registros;
+	private JLabel txtTabela;
+	private JLabel txtRegistros;
+	private JLabel lblBanco_1;
+	private JTextField txtPGServidor;
+	private JLabel lblNewLabel_4;
+	private JTextField txtPGPorta;
+	private JLabel lblUsurio;
+	private JTextField txtPGUsuario;
+	private JLabel lblNewLabel_5;
+	private JLabel lblNewLabel_6;
+	private JPasswordField pwfPGSenha;
+	private JLabel lblServidor;
+	private JLabel lblServidor_1;
+	private JSeparator separator;
+	private JSeparator separator_1;
+	private JSeparator separator_2;
+	private JLabel lblNewLabel_7;
+	private JTextField txtVMDUsuario;
+	private JLabel lblNewLabel_8;
+	private JLabel lblNewLabel_9;
+	private JTextField txtVmdUsuarioConsulta;
+	private JLabel lblNewLabel_10;
+	private JPasswordField txtVMDSenha;
+	private JPasswordField txtVmdSenhaConsulta;
 
 	/**
 	 * Launch the application.
@@ -79,55 +104,131 @@ public class App extends JFrame {
 	public App() {
 		setTitle("inFarma - Conversor de dados");
 		setResizable(false);
-		setBounds(100, 100, 460, 314);
+		setBounds(100, 100, 602, 436);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel panelTop = new JPanel();
 		getContentPane().add(panelTop, BorderLayout.NORTH);
-		panelTop.setLayout(new MigLayout("", "[fill][grow][][grow]", "[][][][]"));
+		panelTop.setLayout(new MigLayout("", "[fill][][grow][grow][grow][][]", "[][][21.00][][][21.00][][][8.00]"));
 		
 		JLabel lblNewLabel = new JLabel("BD Antigo");
 		panelTop.add(lblNewLabel, "cell 0 0,alignx trailing");
 		
+		lblNewLabel_6 = new JLabel("Servidor");
+		panelTop.add(lblNewLabel_6, "cell 1 0,alignx trailing");
+		
+		txtPGServidor = new JTextField();
+		txtPGServidor.setText("localhost");
+		panelTop.add(txtPGServidor, "cell 2 0,growx");
+		txtPGServidor.setColumns(10);
+		
+		lblNewLabel_4 = new JLabel("Porta");
+		panelTop.add(lblNewLabel_4, "cell 3 0,alignx right");
+		
+		txtPGPorta = new JTextField();
+		txtPGPorta.setText("5432");
+		panelTop.add(txtPGPorta, "cell 4 0");
+		txtPGPorta.setColumns(5);
+		
+		lblBanco_1 = new JLabel("Banco");
+		panelTop.add(lblBanco_1, "cell 5 0,alignx right");
+		
 		txtPGBanco= new JTextField();
 		txtPGBanco.setText("povo_brasileiro");
-		panelTop.add(txtPGBanco, "cell 1 0,growx");
-		txtPGBanco.setColumns(10);
+		panelTop.add(txtPGBanco, "flowx,cell 6 0,growx");
+		txtPGBanco.setColumns(15);
+		
+		lblUsurio = new JLabel("Usu\u00E1rio");
+		panelTop.add(lblUsurio, "cell 1 1,alignx trailing");
+		
+		txtPGUsuario = new JTextField();
+		txtPGUsuario.setText("postgres");
+		panelTop.add(txtPGUsuario, "cell 2 1,growx");
+		txtPGUsuario.setColumns(10);
+		
+		lblNewLabel_5 = new JLabel("Senha");
+		panelTop.add(lblNewLabel_5, "cell 3 1,alignx trailing");
+		
+		pwfPGSenha = new JPasswordField();
+		panelTop.add(pwfPGSenha, "cell 4 1,growx");
+				
+		separator = new JSeparator();
+		panelTop.add(separator, "cell 0 2 7 1");
 
-		JLabel lblNewLabel_1 = new JLabel("VMD Servidor");
-		panelTop.add(lblNewLabel_1, "cell 0 1,alignx trailing");
+		JLabel lblNewLabel_1 = new JLabel("VMD");
+		panelTop.add(lblNewLabel_1, "cell 0 3,alignx trailing");
+		
+		lblServidor = new JLabel("Servidor");
+		panelTop.add(lblServidor, "cell 1 3,alignx trailing");
 
 		txtVmdServidor = new JTextField();
 		txtVmdServidor.setText("localhost");
-		panelTop.add(txtVmdServidor, "cell 1 1,growx");
+		panelTop.add(txtVmdServidor, "cell 2 3,growx");
 		txtVmdServidor.setColumns(10);
 
 		JLabel lblNewLabel_2 = new JLabel("Banco");
-		panelTop.add(lblNewLabel_2, "cell 2 1,alignx trailing,aligny baseline");
+		panelTop.add(lblNewLabel_2, "cell 3 3,alignx trailing,aligny baseline");
 
 		txtVmdBanco = new JTextField();
 		txtVmdBanco.setText("VMD_Vazio");
-		panelTop.add(txtVmdBanco, "cell 3 1,growx");
-		txtVmdBanco.setColumns(10);
+		panelTop.add(txtVmdBanco, "cell 4 3,growx");
+		txtVmdBanco.setColumns(15);
 		
-		lblVmdDeConsulta = new JLabel("VMD de Consulta Servidor");
-		panelTop.add(lblVmdDeConsulta, "cell 0 2,alignx trailing");
+		lblNewLabel_7 = new JLabel("Usu\u00E1rio");
+		panelTop.add(lblNewLabel_7, "cell 1 4,alignx trailing");
+		
+		txtVMDUsuario = new JTextField();
+		txtVMDUsuario.setText("sa");
+		panelTop.add(txtVMDUsuario, "cell 2 4,growx");
+		txtVMDUsuario.setColumns(10);
+		
+		lblNewLabel_8 = new JLabel("Senha");
+		lblNewLabel_8.setHorizontalAlignment(SwingConstants.RIGHT);
+		panelTop.add(lblNewLabel_8, "cell 3 4,alignx trailing");
+		
+		txtVMDSenha = new JPasswordField();
+		txtVMDSenha.setText("vls021130");
+		panelTop.add(txtVMDSenha, "cell 4 4,growx");
+		
+		separator_1 = new JSeparator();
+		panelTop.add(separator_1, "cell 0 5 7 1");
+		
+		lblVmdDeConsulta = new JLabel("VMD Consulta");
+		panelTop.add(lblVmdDeConsulta, "cell 0 6,alignx trailing");
+		
+		lblServidor_1 = new JLabel("Servidor");
+		panelTop.add(lblServidor_1, "cell 1 6,alignx trailing");
 		
 		txtVmdServidorConsulta = new JTextField();
 		txtVmdServidorConsulta.setText("localhost");
-		panelTop.add(txtVmdServidorConsulta, "cell 1 2,growx");
+		panelTop.add(txtVmdServidorConsulta, "cell 2 6,growx");
 		txtVmdServidorConsulta.setColumns(10);
 		
 		lblBanco = new JLabel("Banco");
-		panelTop.add(lblBanco, "cell 2 2,alignx trailing");
+		panelTop.add(lblBanco, "cell 3 6,alignx trailing");
 		
 		txtVmdBancoConsulta = new JTextField();
 		txtVmdBancoConsulta.setText("VMD_Consulta");
-		panelTop.add(txtVmdBancoConsulta, "cell 3 2,growx");
-		txtVmdBancoConsulta.setColumns(10);
-
-		JLabel lblNewLabel_3 = new JLabel("Converte uma base para o Varejo");
-		panelTop.add(lblNewLabel_3, "cell 0 3 4 1");
+		panelTop.add(txtVmdBancoConsulta, "cell 4 6,growx");
+		txtVmdBancoConsulta.setColumns(15);
+		
+		lblNewLabel_9 = new JLabel("Usu\u00E1rio");
+		panelTop.add(lblNewLabel_9, "cell 1 7,alignx trailing");
+		
+		txtVmdUsuarioConsulta = new JTextField();
+		txtVmdUsuarioConsulta.setText("sa");
+		panelTop.add(txtVmdUsuarioConsulta, "cell 2 7,growx");
+		txtVmdUsuarioConsulta.setColumns(10);
+		
+		lblNewLabel_10 = new JLabel("Senha");
+		panelTop.add(lblNewLabel_10, "cell 3 7,alignx trailing");
+		
+		txtVmdSenhaConsulta = new JPasswordField();
+		txtVmdSenhaConsulta.setText("vls021130");
+		panelTop.add(txtVmdSenhaConsulta, "cell 4 7,growx");
+		
+		separator_2 = new JSeparator();
+		panelTop.add(separator_2, "cell 0 8 7 1");
 
 		final JPanel panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.SOUTH);
@@ -143,10 +244,10 @@ public class App extends JFrame {
 				
 				int resp = JOptionPane.showConfirmDialog(panel, "Confirma?", 
 						   "Processar Dados", JOptionPane.YES_NO_OPTION);
-				Forne forne = new Forne();	Fabri fabri = new Fabri();	Grcli grcli = new Grcli(); 
-				Clien clien = new Clien();	Ender ender = new Ender();	Produ produ = new Produ();	
-				Prxlj prxlj = new Prxlj();
 				if (resp == 0) {
+					Forne forne = new Forne();	Fabri fabri = new Fabri();	Grcli grcli = new Grcli(); 
+					Clien clien = new Clien();	Ender ender = new Ender();	Produ produ = new Produ();	
+					Prxlj prxlj = new Prxlj();
 					if (cboxFABRI.isSelected() && cboxPRODU.isSelected() 
 						 && cboxCLIEN.isSelected() && cboxFORNE.isSelected() 
 						 && cboxENDER.isSelected() && cboxGRCLI.isSelected()) {
@@ -164,8 +265,8 @@ public class App extends JFrame {
 						System.out.println("COMEÇOU FABRI");
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("FABRI");
-						label_nome_tabela.setText("Importando FABRI");
-						fabri.importa(progressBar2, label_registros);
+						txtTabela.setText("Importando FABRI");
+						fabri.importa(progressBar2, txtRegistros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 						
@@ -175,8 +276,8 @@ public class App extends JFrame {
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("PRXLJ");
 						deleta("PRODU");
-						label_nome_tabela.setText("Importando PRODU");
-						produ.importa(progressBar2, label_registros);
+						txtTabela.setText("Importando PRODU");
+						produ.importa(progressBar2, txtRegistros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
@@ -184,8 +285,8 @@ public class App extends JFrame {
 					if (cboxPRXLJ.isSelected()) {
 						System.out.println("COMEÇOU PRXLJ");
 						progressBar.setValue(progressBar.getValue() + 1);
-						label_nome_tabela.setText("Importando PRXLJ");
-						prxlj.importa(progressBar2, label_registros);
+						txtTabela.setText("Importando PRXLJ");
+						prxlj.importa(progressBar2, txtRegistros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
@@ -194,8 +295,8 @@ public class App extends JFrame {
 						System.out.println("COMEÇOU FORNE");
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("FORNE");
-						label_nome_tabela.setText("Importando FORNE");
-						forne.importa(progressBar2, label_registros);
+						txtTabela.setText("Importando FORNE");
+						forne.importa(progressBar2, txtRegistros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
@@ -204,8 +305,8 @@ public class App extends JFrame {
 						System.out.println("COMEÇOU GRCLI");
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("GRCLI");
-						label_nome_tabela.setText("Importando GRCLI");
-						grcli.importa(progressBar2, label_registros);
+						txtTabela.setText("Importando GRCLI");
+						grcli.importa(progressBar2, txtRegistros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
@@ -214,8 +315,8 @@ public class App extends JFrame {
 						System.out.println("COMEÇOU CLIEN");
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("CLIEN");
-						label_nome_tabela.setText("Importando CLIEN");
-						clien.importa(progressBar2, label_registros);
+						txtTabela.setText("Importando CLIEN");
+						clien.importa(progressBar2, txtRegistros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					
@@ -225,8 +326,8 @@ public class App extends JFrame {
 						progressBar.setValue(progressBar.getValue() + 1);
 						deleta("CLXED");
 						deleta("ENDER");
-						label_nome_tabela.setText("Importando ENDER");
-						ender.importa(progressBar2, label_registros);
+						txtTabela.setText("Importando ENDER");
+						ender.importa(progressBar2, txtRegistros);
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
 					progressBar.setValue(progressBar.getMaximum());
@@ -247,8 +348,8 @@ public class App extends JFrame {
 			protected void done() {
 				try {
 					progressBar.setValue(0);
-					label_nome_tabela.setText("");
-					label_registros.setText("");
+					txtTabela.setText("");
+					txtRegistros.setText("");
 					btn_limpa_dados.setEnabled(true);
 					btn_processa.setEnabled(true);
 					getContentPane().setCursor(Cursor.getDefaultCursor());
@@ -276,13 +377,22 @@ public class App extends JFrame {
 
 		btn_processa = new JButton("Processa");
 		btn_processa.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				Conexao.PostGres_BANCO = txtPGBanco.getText();
+				Conexao.PostGres_SERVIDOR = txtPGServidor.getText();
+				Conexao.PostGres_PORTA = txtPGPorta.getText();
+				Conexao.PostGres_USUARIO = txtPGUsuario.getText();
+				Conexao.PostGres_SENHA = pwfPGSenha.getText();
 				Conexao.SQL_BANCO = txtVmdBanco.getText();
 				Conexao.SQL_SERVIDOR = txtVmdServidor.getText();
+				Conexao.SQL_USUARIO = txtVMDUsuario.getText();
+				Conexao.SQL_SENHA = txtVMDSenha.getText();
 				Conexao.SQL_SERVIDOR_CONSULTA = txtVmdServidorConsulta.getText();
 				Conexao.SQL_BANCO_CONSULTA = txtVmdBancoConsulta.getText();
+				Conexao.SQL_USUARIO_CONSULTA = txtVmdUsuarioConsulta.getText();
+				Conexao.SQL_SENHA_CONSULTA = txtVmdSenhaConsulta.getText();
 				new ProcessaWorker().execute();
 			}
 		});
@@ -386,11 +496,22 @@ public class App extends JFrame {
 
 		btn_limpa_dados = new JButton("Limpa Dados");
 		btn_limpa_dados.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
 				getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				Conexao.PostGres_BANCO = txtPGBanco.getText();
+				Conexao.PostGres_SERVIDOR = txtPGServidor.getText();
+				Conexao.PostGres_PORTA = txtPGPorta.getText();
+				Conexao.PostGres_USUARIO = txtPGUsuario.getText();
+				Conexao.PostGres_SENHA = pwfPGSenha.getText();
 				Conexao.SQL_BANCO = txtVmdBanco.getText();
 				Conexao.SQL_SERVIDOR = txtVmdServidor.getText();
+				Conexao.SQL_USUARIO = txtVMDUsuario.getText();
+				Conexao.SQL_SENHA = txtVMDSenha.getText();
+				Conexao.SQL_SERVIDOR_CONSULTA = txtVmdServidorConsulta.getText();
+				Conexao.SQL_BANCO_CONSULTA = txtVmdBancoConsulta.getText();
+				Conexao.SQL_USUARIO_CONSULTA = txtVmdUsuarioConsulta.getText();
+				Conexao.SQL_SENHA_CONSULTA = txtVmdSenhaConsulta.getText();
 				new LimpaDadosWorker().execute();
 			}
 		});
@@ -400,47 +521,50 @@ public class App extends JFrame {
 		JPanel panel_1 = new JPanel();
 		panel_1.setToolTipText("");
 		getContentPane().add(panel_1, BorderLayout.CENTER);
-		panel_1.setLayout(new MigLayout("", "[][][][][][][][][grow,fill]", "[][][][][][][][][][][][][]"));
+		panel_1.setLayout(new MigLayout("", "[][][][][][][][][grow,fill]", "[][][][][][][]"));
 		
+		JLabel lblNewLabel_3 = new JLabel("Converte uma base para o Varejo");
+		panel_1.add(lblNewLabel_3, "cell 0 0 4 1");
+
 		cboxFABRI = new JCheckBox("1-FABRI");
 		cboxFABRI.setSelected(true);
-		panel_1.add(cboxFABRI, "cell 0 0");
+		panel_1.add(cboxFABRI, "cell 0 1");
 		
 		cboxPRXLJ = new JCheckBox("3-PRXLJ");
 		cboxPRXLJ.setSelected(true);
-		panel_1.add(cboxPRXLJ, "cell 1 0");
+		panel_1.add(cboxPRXLJ, "cell 1 1");
 		
 		cboxGRCLI = new JCheckBox("5-GRCLI");
 		cboxGRCLI.setSelected(true);
-		panel_1.add(cboxGRCLI, "cell 2 0");
+		panel_1.add(cboxGRCLI, "cell 2 1");
 		
 		cboxENDER = new JCheckBox("7-ENDER");
 		cboxENDER.setSelected(true);
-		panel_1.add(cboxENDER, "cell 3 0");
+		panel_1.add(cboxENDER, "cell 3 1");
 
 		cboxPRODU = new JCheckBox("2-PRODU");
 		cboxPRODU.setSelected(true);
-		panel_1.add(cboxPRODU, "cell 0 1");
+		panel_1.add(cboxPRODU, "cell 0 2");
 		
 		cboxFORNE = new JCheckBox("4-FORNE");
 		cboxFORNE.setSelected(true);
-		panel_1.add(cboxFORNE, "cell 1 1");
+		panel_1.add(cboxFORNE, "cell 1 2");
 		
 		cboxCLIEN = new JCheckBox("6-CLIEN");
 		cboxCLIEN.setSelected(true);
-		panel_1.add(cboxCLIEN, "cell 2 1");
+		panel_1.add(cboxCLIEN, "cell 2 2");
 		
-		label_nome_tabela = new JLabel("");
-		panel_1.add(label_nome_tabela, "flowx,cell 0 9");
+		txtTabela = new JLabel("");
+		panel_1.add(txtTabela, "cell 0 3 2 1");
 		
-		label_registros = new JLabel("");
-		panel_1.add(label_registros, "cell 1 9");
+		txtRegistros = new JLabel("");
+		panel_1.add(txtRegistros, "cell 2 3 2 1");
 
 		progressBar = new JProgressBar();
-		panel_1.add(progressBar, "cell 0 11 9 1,growx");
+		panel_1.add(progressBar, "cell 0 5 9 1,growx");
 
 		progressBar2 = new JProgressBar();
-		panel_1.add(progressBar2, "cell 0 12 9 1,growx");
+		panel_1.add(progressBar2, "cell 0 6 9 1,growx");
 
 	}
 

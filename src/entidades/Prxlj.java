@@ -20,9 +20,9 @@ public class Prxlj {
 		String mProdu = "select cod_reduzido, nom_produto, dat_cadastro, cod_laborat, cod_barra, vlr_venda, vlr_custo, flg_ativo, flg_descvenda from cadprodu";
 		String vPrxlj = "Update PRXLJ set Prc_VenAtu = ?, Prc_CusLiq = ?, Prc_CusLiqMed = ?, Prc_CusEnt = ?, Flg_BlqCom = ?, Flg_BlqVen = ?, Flg_BlqDsc=? where Cod_Produt = ?";
 		try (PreparedStatement  pVmd = vmd.prepareStatement(vPrxlj);
-			 PreparedStatement pMs = pg.prepareStatement(mProdu)) {
+			 PreparedStatement pPg = pg.prepareStatement(mProdu)) {
 			
-			ResultSet rs = pMs.executeQuery();
+			ResultSet rs = pPg.executeQuery();
 			
 			// contar a qtde de registros
 			int registros = a.contaRegistrosVMD("PRXLJ");
@@ -58,8 +58,8 @@ public class Prxlj {
 
 			}
 			System.out.println("CADASTROU PRXLJ");
-			pg.close();
-			rs.close();
+			pVmd.close();
+			pPg.close();
 			
 			progressBar2.setValue(0);
 		}
